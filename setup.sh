@@ -37,7 +37,7 @@ if [ -n "$ENV_URL" ]; then
     openssl enc -d -aes-256-cbc -pbkdf2 -md sha512 -salt -iter 10000 -pass pass:$ENV_PW -in "tokens.tar.gz" -out "tokensdec.tar.gz"
     tar xzf "tokensdec.tar.gz"
     rm "tokens.tar.gz" "tokensdec.tar.gz"
-    set -a; . "tokens.env"; set +a
+    set -a; . ./tokens.env ; set +a
 fi
 
 srep "port" "$PORT" "$CONFIG"
@@ -52,7 +52,7 @@ srep "name" $(surround $BOT_NAME) "bots/$BOT_NAME/bot.toml"
 srep "key" $(surround $BOT_IDENT) "bots/$BOT_NAME/bot.toml"
 srep "address" $(surround $BOT_TS3_ADDRESS) "bots/$BOT_NAME/bot.toml"
 
-echo $RULES > "$CRULE"
+echo -e $RULES > "$CRULE"
 
 if [ -n "$MUSIC_URL" ]; then
     ## Do something like downloading the stuff
