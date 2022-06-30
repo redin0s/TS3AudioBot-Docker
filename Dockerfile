@@ -7,7 +7,7 @@ ENV USER ts3bot
 
 
 #install dependencies
-RUN apk add --no-cache --update ffmpeg youtube-dl opus-dev
+RUN apk add --no-cache --update ffmpeg youtube-dl opus-dev openssl
 
 #Add bot user
 RUN adduser --disabled-password -u "${PUID}" "${USER}"

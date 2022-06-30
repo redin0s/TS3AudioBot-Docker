@@ -1,6 +1,8 @@
 #!/bin/sh
 
 #### Variables that should be set
+# ENV_URL url to download the archive that contains the env variables (tar.gz)
+# ENV_PW archive password
 # PORT where to host the webserver
 # ADMIN_UID admin uid
 # ADMIN_TOKEN admin token
@@ -9,10 +11,16 @@
 # BOT_TS3_ADDRESS server address to which to connect
 # MUSIC_URL url from which to download a zip file containing the music that you want to store
 # RULES contents of the rules.toml file, PLEASE I'M SORRY DON'T JUDGE ME
+###
+# The archive is encrypted with these flags
+# -aes-256-cbc -pbkdf2 -md sha512 -salt -iter 10000
+# why? just because
+###
 
 CONFIG=ts3audiobot.toml
 CRULE=rights.toml
 TMPFILE=music.tar.gz
+
 
 function srep {
     # $1 is the key to search, $2 is the value to insert, $3 is the file
@@ -22,6 +30,16 @@ function srep {
 function surround {
     echo -ne "\\\"$1\\\""
 }
+
+if [ -n "$ENV_URL" ]; then
+    echo "ENV_URL found getting the tokens..."
+    wget "$ENV_URL" -O "tokens.tar.gz"
+    openssl enc -d -aes-256-cbc -pbkdf2 -md sha512 -salt -iter 10000 -pass pass:$ENV_PW -in "tokens.tar.gz" -out "tokensdec.tar.gz"
+    tar xzf "tokensdec.tar.gz"
+    rm "tokens.tar.gz" "tokensdec.tar.gz"
+    set -a; . "tokens.env"; set +a
+fi
+
 srep "port" "$PORT" "$CONFIG"
 srep "admin" $(surround $ADMIN_UID) "$CONFIG"
 srep "token" $(surround $ADMIN_TOKEN) "$CONFIG"
